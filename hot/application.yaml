@@ -23,4 +23,4 @@ spec:
               cpu: 8
             limits:
               memory: 4Gi
-         nodeName: masters
+        nodeName: masters
