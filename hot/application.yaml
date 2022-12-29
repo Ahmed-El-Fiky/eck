@@ -3,14 +3,14 @@ kind: Elasticsearch
 metadata:
   name: quickstart
 spec:
+  nodeSelector: 
+    type: master      
   version: 8.5.3
   nodeSets:
   - name: default
     count: 1
     podTemplate:
-      spec:
-        nodeSelector: 
-          type: master        
+      spec:     
         containers:
         - name: elasticsearch
           resources:
