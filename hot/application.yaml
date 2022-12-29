@@ -2,6 +2,8 @@ apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
   name: quickstart
+  labels:
+    type: master
 spec: 
   version: 8.5.3
   nodeSets:
@@ -9,8 +11,6 @@ spec:
     count: 1
     podTemplate:
       spec:
-        nodeSelector:
-          type: master
         initContainers:
         - name: sysctl
           securityContext:
@@ -25,3 +25,5 @@ spec:
               cpu: 8
             limits:
               memory: 4Gi
+        nodeSelector: 
+          type: master              
