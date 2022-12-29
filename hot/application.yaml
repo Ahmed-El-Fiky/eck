@@ -3,6 +3,8 @@ kind: Elasticsearch
 metadata:
   name: quickstart
 spec:
+  nodeSelector:
+    type: master 
   version: 8.5.3
   nodeSets:
   - name: default
@@ -23,5 +25,3 @@ spec:
               cpu: 8
             limits:
               memory: 4Gi
-        nodeSelector:
-          type: master      
