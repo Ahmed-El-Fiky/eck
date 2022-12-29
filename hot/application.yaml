@@ -7,7 +7,7 @@ spec:
   version: 8.5.3
   volumeClaimDeletePolicy: DeleteOnScaledownOnly  
   nodeSets:
-  - name: zone-b
+  - name: hot-b
     count: 1
     config:
       node.attr.data: hot      
@@ -39,7 +39,7 @@ spec:
             privileged: true
             runAsUser: 0
           command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
-  - name: zone-c
+  - name: hot-c
     count: 1
     config:
       node.attr.data: hot      
@@ -71,7 +71,7 @@ spec:
             privileged: true
             runAsUser: 0
           command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
-  - name: zone-d
+  - name: hot-d
     count: 1
     config:
       node.attr.data: hot      
