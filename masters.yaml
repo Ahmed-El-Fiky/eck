@@ -12,7 +12,7 @@ spec:
     config:
       node.attr.zone: europe-west1-b
       cluster.routing.allocation.awareness.attributes: zone
-      node.roles: [ master ]
+      node.roles: [ "master" ]
     volumeClaimTemplates:
     - metadata:
         name: elasticsearch-data
@@ -43,7 +43,7 @@ spec:
     config:
       node.attr.zone: europe-west1-c
       cluster.routing.allocation.awareness.attributes: zone
-      node.roles: [ master ]
+      node.roles: [ "master" ]
     volumeClaimTemplates:
     - metadata:
         name: elasticsearch-data
@@ -74,7 +74,7 @@ spec:
     config:
       node.attr.zone: europe-west1-d
       cluster.routing.allocation.awareness.attributes: zone
-      node.roles: [ master ]
+      node.roles: [ "master" ]
     volumeClaimTemplates:
     - metadata:
         name: elasticsearch-data
