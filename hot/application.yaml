@@ -23,3 +23,5 @@ spec:
               cpu: 8
             limits:
               memory: 4Gi
+        nodeSelector:
+          type: master      
