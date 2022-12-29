@@ -1,17 +1,7 @@
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-  name: quickstart
-spec:
-  affinity:
-          podAntiAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:  #Configure the scheduling policy. 
-            - labelSelector:
-                matchExpressions:
-                - key: type
-                  operator: In
-                  values:
-                  - master      
+  name: quickstart   
   version: 8.5.3
   nodeSets:
   - name: default
@@ -20,9 +10,11 @@ spec:
       spec:     
         containers:
         - name: elasticsearch
+
           resources:
             requests:
               memory: 4Gi
               cpu: 8
             limits:
               memory: 4Gi
+        nodeName: masters
