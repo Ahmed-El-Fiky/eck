@@ -2,21 +2,15 @@ apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
   name: quickstart
-  labels:
-    type: master
-spec: 
+spec:
   version: 8.5.3
   nodeSets:
   - name: default
     count: 1
     podTemplate:
       spec:
-        initContainers:
-        - name: sysctl
-          securityContext:
-            privileged: true
-            runAsUser: 0
-          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']      
+        nodeSelector: 
+          type: master
         containers:
         - name: elasticsearch
           resources:
@@ -25,5 +19,3 @@ spec:
               cpu: 8
             limits:
               memory: 4Gi
-        nodeSelector: 
-          type: master              
