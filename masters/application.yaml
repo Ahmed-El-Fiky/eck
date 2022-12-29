@@ -100,3 +100,100 @@ spec:
             privileged: true
             runAsUser: 0
           command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+  - name: hot-b
+    count: 1
+    config:
+      node.attr.data: hot      
+      node.attr.zone: europe-west1-b
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: [ "data_hot", "data_content" ]
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+            memory: 8Gi
+            cpu: 1
+          limits:
+            memory: 8Gi
+            cpu: 3       
+        storageClassName: hot
+    podTemplate:
+      spec:        
+        nodeSelector: 
+          type: master
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+  - name: hot-c
+    count: 1
+    config:
+      node.attr.data: hot      
+      node.attr.zone: europe-west1-c
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: [ "data_hot", "data_content" ]
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+            memory: 8Gi
+            cpu: 1
+          limits:
+            memory: 8Gi
+            cpu: 3        
+        storageClassName: hot
+    podTemplate:
+      spec:        
+        nodeSelector: 
+          type: master
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+  - name: hot-d
+    count: 1
+    config:
+      node.attr.data: hot      
+      node.attr.zone: europe-west1-d
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: [ "data_hot", "data_content" ]
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+            memory: 8Gi
+            cpu: 1
+          limits:
+            memory: 8Gi
+            cpu: 3           
+        storageClassName: hot
+    podTemplate:
+      spec:        
+        nodeSelector: 
+          type: master
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+          
