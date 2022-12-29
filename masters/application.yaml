@@ -18,7 +18,15 @@ spec:
         name: elasticsearch-data
       spec:
         accessModes:
-        - ReadWriteOnce    
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+            memory: 16Gi
+            cpu: 8
+          limits:
+            memory: 16Gi
+            cpu: 8       
         storageClassName: hot
     podTemplate:
       spec:        
@@ -41,7 +49,15 @@ spec:
         name: elasticsearch-data
       spec:
         accessModes:
-        - ReadWriteOnce    
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+            memory: 16Gi
+            cpu: 8
+          limits:
+            memory: 16Gi
+            cpu: 8       
         storageClassName: hot      
     podTemplate:
       spec:
@@ -64,7 +80,15 @@ spec:
         name: elasticsearch-data
       spec:
         accessModes:
-        - ReadWriteOnce    
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+            memory: 16Gi
+            cpu: 8
+          limits:
+            memory: 16Gi
+            cpu: 8       
         storageClassName: hot      
     podTemplate:
       spec:
@@ -89,6 +113,21 @@ spec:
       spec:
         accessModes:
         - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+            memory: 8Gi
+            cpu: 1
+          limits:
+            memory: 8Gi
+            cpu: 3       
+        storageClassName: hot
+    podTemplate:
+      spec:        
+        nodeSelector: 
+          type: master
+        initContainers:
+        - name: sysctl
           securityContext:
             privileged: true
             runAsUser: 0
@@ -105,7 +144,15 @@ spec:
         name: elasticsearch-data
       spec:
         accessModes:
-        - ReadWriteOnce    
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+            memory: 8Gi
+            cpu: 1
+          limits:
+            memory: 8Gi
+            cpu: 3        
         storageClassName: hot
     podTemplate:
       spec:        
@@ -129,7 +176,15 @@ spec:
         name: elasticsearch-data
       spec:
         accessModes:
-        - ReadWriteOnce        
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+            memory: 8Gi
+            cpu: 1
+          limits:
+            memory: 8Gi
+            cpu: 3           
         storageClassName: hot
     podTemplate:
       spec:        
@@ -153,7 +208,15 @@ spec:
         name: elasticsearch-data
       spec:
         accessModes:
-        - ReadWriteOnce       
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+            memory: 8Gi
+            cpu: 1
+          limits:
+            memory: 8Gi
+            cpu: 3           
         storageClassName: hot
     podTemplate:
       spec:        
