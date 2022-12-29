@@ -6,11 +6,11 @@ metadata:
 spec:
   version: 8.5.3
   volumeClaimDeletePolicy: DeleteOnScaledownOnly  
+  elasticsearchRef:
+    name: elasticsearch    
   nodeSets:
   - name: hot-b
     count: 1
-    elasticsearchRef:
-      name: elasticsearch-quickstart    
     config:
       node.attr.data: hot      
       node.attr.zone: europe-west1-b
@@ -43,8 +43,6 @@ spec:
           command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
   - name: hot-c
     count: 1
-    elasticsearchRef:
-      name: elasticsearch-quickstart      
     config:
       node.attr.data: hot      
       node.attr.zone: europe-west1-c
@@ -77,8 +75,6 @@ spec:
           command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
   - name: hot-d
     count: 1
-    elasticsearchRef:
-      name: elasticsearch-quickstart      
     config:
       node.attr.data: hot      
       node.attr.zone: europe-west1-d
