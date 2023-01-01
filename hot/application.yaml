@@ -41,3 +41,73 @@ spec:
             privileged: true
             runAsUser: 0
           command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+  - name: master-c
+    count: 1
+    config:
+      node.attr.zone: europe-west1-c
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: [ "master" ]
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: hot                    
+    podTemplate:
+      spec:
+        nodeSelector:
+          cloud.google.com/gke-nodepool: masters       
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 16Gi
+              cpu: '8'
+            limits:
+              memory: 16Gi
+              cpu: '8' 
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+  - name: master-d
+    count: 1
+    config:
+      node.attr.zone: europe-west1-d
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: [ "master" ]
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: hot                    
+    podTemplate:
+      spec:
+        nodeSelector:
+          cloud.google.com/gke-nodepool: masters       
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 16Gi
+              cpu: '8'
+            limits:
+              memory: 16Gi
+              cpu: '8' 
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
