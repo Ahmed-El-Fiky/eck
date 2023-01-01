@@ -1,25 +1,19 @@
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-  name: elasticsearch
-  namespace: system
+  name: quickstart
 spec:
-  containers:
-  - name: zone-b
-    version: 8.5.3  
-    config:
-      node.attr.zone: europe-west1-b
-      cluster.routing.allocation.awareness.attributes: zone
-      node.roles: [ "master" ]  
-    resources:
-      requests:
-        storage: 100Gi
-        memory: 16Gi
-        cpu: 8
-      limits:
-        memory: 16Gi
-        cpu: 8       
-    volumeClaimDeletePolicy: DeleteOnScaledownOnly  
-    specs:
-      nodeSelector: 
-        type: master
+  version: 8.5.3
+  nodeSets:
+  - name: default
+    count: 1
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 4Gi
+              cpu: 8
+            limits:
+              memory: 4Gi
