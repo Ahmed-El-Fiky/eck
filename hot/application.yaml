@@ -4,7 +4,7 @@ metadata:
   name: quickstart
 spec:
   nodeSelector:
-    cloud.google.com/gke-nodepool: masters       
+    cloud.google.com/gke-nodepool: hot       
   version: 8.5.3
   nodeSets:
   - name: default
@@ -13,6 +13,12 @@ spec:
       spec:
         containers:
         - name: elasticsearch
+          resources:
+            requests:
+              memory: 4Gi
+              cpu: 8
+            limits:
+              memory: 4Gi
         initContainers:
         - name: sysctl
           securityContext:
