@@ -3,7 +3,8 @@ kind: Elasticsearch
 metadata:
   name: elastic-masters
   namespace: system
-  version: 8.5.3
+spec:  
+  version: 8.5.3  
   nodeSets:
   - name: master-b
     count: 1
