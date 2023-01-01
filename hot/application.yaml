@@ -3,20 +3,19 @@ kind: Elasticsearch
 metadata:
   name: quickstart
 spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: type
+            operator: In
+            values:
+            - master
   version: 8.5.3
   nodeSets:
   - name: default
-    count: 1
-    spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: type
-                operator: In
-                values:
-                - master  
+    count: 1 
     podTemplate:
       spec:
         containers:
