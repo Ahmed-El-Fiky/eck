@@ -9,8 +9,6 @@ spec:
     count: 1
     podTemplate:
       spec:
-        nodeSelector: 
-          type: master
         containers:
         - name: elasticsearch
           resources:
@@ -19,3 +17,12 @@ spec:
               cpu: 8
             limits:
               memory: 4Gi
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: type
+                  operator: In
+                  values:
+                  - master
