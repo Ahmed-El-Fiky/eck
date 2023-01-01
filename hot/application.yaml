@@ -3,20 +3,17 @@ kind: Elasticsearch
 metadata:
   name: quickstart
 spec:
+  nodeSelector:
+    cloud.google.com/gke-nodepool: masters       
   version: 8.5.3
   nodeSets:
   - name: default
     count: 1
     podTemplate:
       spec:
-        selector:
-          matchLabels:
-            type: master
-        containers:
-        - name: elasticsearch        
-          resources:
-            requests:
-              memory: 4Gi
-              cpu: 8
-            limits:
-              memory: 4Gi
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
