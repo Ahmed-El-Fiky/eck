@@ -9,8 +9,10 @@ spec:
     count: 1
     podTemplate:
       spec:
+        nodeSelector:
+          type: master
         containers:
-        - name: elasticsearch
+        - name: elasticsearch        
           resources:
             requests:
               memory: 4Gi
