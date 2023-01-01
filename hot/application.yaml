@@ -29,9 +29,16 @@ spec:
       spec:
         containers:
         - name: elasticsearch
+          volumeClaimTemplates:
+          - metadata:
+            name: elasticsearch-data   
+            spec: 
+              accessModes:
+              - ReadWriteOnce         
           resources:
             requests:
               memory: 4Gi
+              storage: 100Gi  
               cpu: 8
             limits:
               memory: 4Gi
