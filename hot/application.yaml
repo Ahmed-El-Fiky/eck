@@ -3,9 +3,6 @@ kind: Elasticsearch
 metadata:
   name: elastic-masters
   namespace: system
-spec:
-  nodeSelector:
-    cloud.google.com/gke-nodepool: masters       
   version: 8.5.3
   nodeSets:
   - name: master-b
@@ -25,6 +22,8 @@ spec:
             storage: 100Gi          
     podTemplate:
       spec:
+        nodeSelector:
+          cloud.google.com/gke-nodepool: masters       
         containers:
         - name: elasticsearch
           resources:
