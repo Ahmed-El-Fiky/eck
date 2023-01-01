@@ -277,24 +277,24 @@ spec:
   version: 8.5.3
   count: 1
     podTemplate:
-    spec:
-      nodeSelector:
-        cloud.google.com/gke-nodepool: masters       
-      containers:
-      - name: kibana
-        resources:
-          requests:
-            memory: 16Gi
-            cpu: '8'
-          limits:
-            memory: 16Gi
-            cpu: '8' 
-      initContainers:
-      - name: sysctl
-        securityContext:
-          privileged: true
-          runAsUser: 0
-        command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']  
+      spec:
+        nodeSelector:
+          cloud.google.com/gke-nodepool: masters       
+        containers:
+        - name: kibana
+          resources:
+            requests:
+              memory: 16Gi
+              cpu: '8'
+            limits:
+              memory: 16Gi
+              cpu: '8' 
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']  
   elasticsearchRef:
     name: elastic-masters
   config:
