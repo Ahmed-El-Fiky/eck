@@ -1,35 +1,42 @@
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-  name: quickstart
+  name: elasticsearch
+  namespace: system
 spec:
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: type
-            operator: In
-            values:
-            - master
   version: 8.5.3
+  volumeClaimDeletePolicy: DeleteOnScaledownOnly  
   nodeSets:
-  - name: default
+  - name: zone-b
     count: 1
-    podTemplate:
+    config:
+      node.attr.zone: europe-west1-b
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: [ "master" ]
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
       spec:
-        containers:
-        - name: elasticsearch
-          volumeClaimTemplates:
-          - metadata:
-            name: elasticsearch-data   
-            spec: 
-              accessModes:
-              - ReadWriteOnce         
-          resources:
-            requests:
-              memory: 4Gi
-              storage: 100Gi  
-              cpu: 8
-            limits:
-              memory: 4Gi
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: hot
+    podTemplate:
+      spec:        
+        nodeSelector: 
+          type: master
+        resources:
+          requests:
+            memory: 4Gi
+            storage: 100Gi  
+            cpu: 8
+          limits:
+            memory: 4Gi  
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
