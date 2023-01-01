@@ -4,7 +4,9 @@ metadata:
   name: elastic-hot
   namespace: system
 spec:  
-  version: 8.5.3  
+  version: 8.5.3
+  elasticsearchRefs:
+  - name: elastic-masters
   nodeSets:
   - name: hot-b
     count: 1
