@@ -19,7 +19,8 @@ metadata:
         - ReadWriteOnce
         resources:
           requests:
-            storage: 100Gi          
+            storage: 100Gi
+        storageClassName: hot                    
     podTemplate:
       spec:
         nodeSelector:
