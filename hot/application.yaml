@@ -1,7 +1,7 @@
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-  name: quickstart
+  name: elk-stack
 spec:
   nodeSelector:
     cloud.google.com/gke-nodepool: hot       
@@ -9,6 +9,19 @@ spec:
   nodeSets:
   - name: default
     count: 1
+    config:
+      node.attr.zone: europe-west1-b
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: [ "master" ]
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi          
     podTemplate:
       spec:
         containers:
