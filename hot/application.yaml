@@ -1,14 +1,14 @@
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-  name: elastic-stack
+  name: elastic-masters
   namespace: system
 spec:
   nodeSelector:
-    cloud.google.com/gke-nodepool: hot       
+    cloud.google.com/gke-nodepool: masters       
   version: 8.5.3
   nodeSets:
-  - name: default
+  - name: master-b
     count: 1
     config:
       node.attr.zone: europe-west1-b
