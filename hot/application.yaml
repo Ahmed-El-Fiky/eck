@@ -15,7 +15,16 @@ spec:
   version: 8.5.3
   nodeSets:
   - name: default
-    count: 1 
+    count: 1
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi     
     podTemplate:
       spec:
         containers:
