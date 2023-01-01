@@ -9,8 +9,9 @@ spec:
     count: 1
     podTemplate:
       spec:
-        nodeSelector:
-          type: master
+        selector:
+          matchLabels:
+            type: master
         containers:
         - name: elasticsearch        
           resources:
