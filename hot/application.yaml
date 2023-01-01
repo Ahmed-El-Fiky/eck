@@ -29,10 +29,10 @@ metadata:
           resources:
             requests:
               memory: 16Gi
-              cpu: 8
+              cpu: '8'
             limits:
               memory: 16Gi
-              cpu: 8 
+              cpu: '8' 
         initContainers:
         - name: sysctl
           securityContext:
