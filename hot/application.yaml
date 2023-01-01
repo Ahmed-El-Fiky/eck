@@ -1,7 +1,8 @@
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-  name: elk-stack
+  name: elastic-stack
+  namespace: system
 spec:
   nodeSelector:
     cloud.google.com/gke-nodepool: hot       
