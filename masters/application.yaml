@@ -222,10 +222,12 @@ apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
   name: kibana-quickstart
-  namespace: default
+  namespace: system
 spec:
   version: 8.5.3
   count: 1
+  nodeSelector:
+    cloud.google.com/gke-nodepool: masters        
   elasticsearchRef:
     name: elastic-masters
   config:
