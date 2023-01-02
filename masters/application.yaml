@@ -11,7 +11,7 @@ spec:
     config:
       node.attr.zone: europe-west1-b
       cluster.routing.allocation.awareness.attributes: zone
-      node.roles: [ "master", "remote_cluster_client"]              
+      node.roles: [ "master", "remote_cluster_client" ]              
     podTemplate:
       spec:
         nodeSelector:
@@ -286,6 +286,15 @@ spec:
         automountServiceAccountToken: true
         securityContext:
           runAsUser: 0
+        containers:
+        - name: agent
+          resources:
+            requests:
+              memory: 300Mi
+              cpu: 0.5
+            limits:
+              memory: 300Mi
+              cpu: 0.5
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
