@@ -187,10 +187,8 @@ spec:
     name: kibana
   elasticsearchRefs:
   - name: elastic-masters
-podTemplate:
-  spec:
-    nodeSelector:
-      cloud.google.com/gke-nodepool: cold   
+  nodeSelector:
+    cloud.google.com/gke-nodepool: cold
   mode: fleet
   fleetServerEnabled: true
   deployment:
@@ -209,10 +207,8 @@ metadata:
   namespace: system
 spec:
   version: 8.5.3
-podTemplate:
-  spec:
-    nodeSelector:
-      cloud.google.com/gke-nodepool: cold   
+  nodeSelector:
+    cloud.google.com/gke-nodepool: cold   
   kibanaRef:
     name: kibana
   fleetServerRef:
