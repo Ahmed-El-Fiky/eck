@@ -221,7 +221,7 @@ spec:
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
-  name: kibana-quickstart
+  name: kibana
   namespace: system
 spec:
   version: 8.5.3
