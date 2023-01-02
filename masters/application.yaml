@@ -175,6 +175,31 @@ spec:
             privileged: true
             runAsUser: 0
           command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+  - name: integrations
+    count: 1
+    config:
+      node.attr.zone: europe-west1-b
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: [ "integrations_server" ]               
+    podTemplate:
+      spec:
+        nodeSelector:
+          cloud.google.com/gke-nodepool: masters       
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 8Gi
+              cpu: '8'
+            limits:
+              memory: 8Gi
+              cpu: '8' 
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
 ---
 apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
@@ -221,13 +246,15 @@ spec:
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
-  name: elastic-masters
+  name: kibana
   namespace: system
 spec:  
   version: 8.5.3  
   nodeSets:
   - name: kibana
     count: 1
+    elasticsearchRef:
+      name: elastic-masters    
     config:
       node.attr.zone: europe-west1-b
       cluster.routing.allocation.awareness.attributes: zone
