@@ -11,7 +11,7 @@ spec:
     config:
       node.attr.zone: europe-west1-b
       cluster.routing.allocation.awareness.attributes: zone
-      node.roles: [ "master", "remote_cluster_client" ]              
+      node.roles: [ "master" ]              
     podTemplate:
       spec:
         nodeSelector:
@@ -139,12 +139,117 @@ spec:
             privileged: true
             runAsUser: 0
           command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
-  - name: ingesto
+  - name: ml
     count: 1
     config:
       node.attr.zone: europe-west1-b
       cluster.routing.allocation.awareness.attributes: zone
-      node.roles: [ "ingest", "ml", "transform" ]
+      node.roles: [ "ml" ]
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: hot                    
+    podTemplate:
+      spec:
+        nodeSelector:
+          cloud.google.com/gke-nodepool: masters       
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 8Gi
+              cpu: '8'
+            limits:
+              memory: 8Gi
+              cpu: '8' 
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']                  
+  - name: ingest
+    count: 1
+    config:
+      node.attr.zone: europe-west1-b
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: [ "ingest" ]
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: hot                    
+    podTemplate:
+      spec:
+        nodeSelector:
+          cloud.google.com/gke-nodepool: masters       
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 8Gi
+              cpu: '4'
+            limits:
+              memory: 8Gi
+              cpu: '4' 
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+  - name: coordinate
+    count: 1
+    config:
+      node.attr.zone: europe-west1-b
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: []
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: hot                    
+    podTemplate:
+      spec:
+        nodeSelector:
+          cloud.google.com/gke-nodepool: masters       
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 8Gi
+              cpu: '4'
+            limits:
+              memory: 8Gi
+              cpu: '4' 
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+  - name: transform
+    count: 1
+    config:
+      node.attr.zone: europe-west1-b
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: [ "transform", "remote_cluster_client" ]
     volumeClaimTemplates:
     - metadata:
         name: elasticsearch-data
@@ -173,7 +278,7 @@ spec:
           securityContext:
             privileged: true
             runAsUser: 0
-          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']                    
 ---
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
