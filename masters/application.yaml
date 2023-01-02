@@ -230,9 +230,24 @@ spec:
     cloud.google.com/gke-nodepool: masters        
   elasticsearchRef:
     name: elastic-masters
+  containers:
+  - name: kibana
+    resources:
+      requests:
+        memory: 8Gi
+        cpu: '3'
+      limits:
+        memory: 8Gi
+        cpu: '3' 
+  initContainers:
+  - name: sysctl
+    securityContext:
+      privileged: true
+      runAsUser: 0
+    command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']    
   config:
-    xpack.fleet.agents.elasticsearch.hosts: ["https://elastic-masters-es-http.default.svc:9200"]
-    xpack.fleet.agents.fleet_server.hosts: ["https://fleet-server-agent-http.default.svc:8220"]
+    xpack.fleet.agents.elasticsearch.hosts: ["https://elastic-masters-es-http.system.svc:9200"]
+    xpack.fleet.agents.fleet_server.hosts: ["https://fleet-server-agent-http.system.svc:8220"]
     xpack.fleet.packages:
       - name: system
         version: latest
