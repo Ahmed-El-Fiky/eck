@@ -186,7 +186,7 @@ spec:
   kibanaRef:
     name: kibana
   elasticsearchRefs:
-  - name: elasticsearch
+  - name: elastic-masters
   mode: fleet
   fleetServerEnabled: true
   deployment:
@@ -221,72 +221,50 @@ spec:
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
-  name: kibana
-  namespace: system
-spec:  
+  name: kibana-quickstart
+  namespace: default
+spec:
   version: 8.5.3
+  count: 1
   elasticsearchRef:
-    name: elastic-masters   
-  nodeSets:
-  - name: kibana
-    count: 1
-    config:
-      node.roles: [ "kibana" ]
-      xpack.fleet.agents.elasticsearch.hosts: ["https://elasticsearch-quickstart-es-http.default.svc:9200"]
-      xpack.fleet.agents.fleet_server.hosts: ["https://fleet-server-quickstart-agent-http.default.svc:8220"]
-      xpack.fleet.packages:
-        - name: system
-          version: latest
-        - name: elastic_agent
-          version: latest
-        - name: fleet_server
-          version: latest
-      xpack.fleet.agentPolicies:
-        - name: Fleet Server on ECK policy
-          id: eck-fleet-server
-          is_default_fleet_server: true
-          namespace: default
-          monitoring_enabled:
-            - logs
-            - metrics
-          unenroll_timeout: 900
-          package_policies:
-          - name: fleet_server-1
-            id: fleet_server-1
+    name: elastic-masters
+  config:
+    xpack.fleet.agents.elasticsearch.hosts: ["https://elastic-masters-es-http.default.svc:9200"]
+    xpack.fleet.agents.fleet_server.hosts: ["https://fleet-server-agent-http.default.svc:8220"]
+    xpack.fleet.packages:
+      - name: system
+        version: latest
+      - name: elastic_agent
+        version: latest
+      - name: fleet_server
+        version: latest
+    xpack.fleet.agentPolicies:
+      - name: Fleet Server on ECK policy
+        id: eck-fleet-server
+        is_default_fleet_server: true
+        namespace: default
+        monitoring_enabled:
+          - logs
+          - metrics
+        unenroll_timeout: 900
+        package_policies:
+        - name: fleet_server-1
+          id: fleet_server-1
+          package:
+            name: fleet_server
+      - name: Elastic Agent on ECK policy
+        id: eck-agent
+        namespace: default
+        monitoring_enabled:
+          - logs
+          - metrics
+        unenroll_timeout: 900
+        is_default: true
+        package_policies:
+          - name: system-1
+            id: system-1
             package:
-              name: fleet_server
-        - name: Elastic Agent on ECK policy
-          id: eck-agent
-          namespace: default
-          monitoring_enabled:
-            - logs
-            - metrics
-          unenroll_timeout: 900
-          is_default: true
-          package_policies:
-            - name: system-1
-              id: system-1
-              package:
-                name: system
-    podTemplate:
-      spec:
-        nodeSelector:
-          cloud.google.com/gke-nodepool: masters       
-        containers:
-        - name: kibana
-          resources:
-            requests:
-              memory: 16Gi
-              cpu: '8'
-            limits:
-              memory: 16Gi
-              cpu: '8' 
-        initContainers:
-        - name: sysctl
-          securityContext:
-            privileged: true
-            runAsUser: 0
-          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']    
+              name: system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
