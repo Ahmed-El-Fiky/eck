@@ -253,7 +253,7 @@ spec:
   kibanaRef:
     name: kibana
   elasticsearchRefs:
-  - name: elasticsearch
+  - name: elastic-masters
   mode: fleet
   fleetServerEnabled: true
   deployment:
