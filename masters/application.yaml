@@ -180,7 +180,7 @@ spec:
     config:
       node.attr.zone: europe-west1-b
       cluster.routing.allocation.awareness.attributes: zone
-      node.roles: [ "coordinating", 'ingest' ]               
+      node.roles: [ "coordinating", "ingest" ]               
     podTemplate:
       spec:
         nodeSelector:
@@ -376,4 +376,4 @@ subjects:
 roleRef:
   kind: ClusterRole
   name: elastic-agent
-  apiGroup: rbac.authorization.k8s.io          
+  apiGroup: rbac.authorization.k8s.io
