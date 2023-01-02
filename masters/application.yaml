@@ -226,25 +226,8 @@ metadata:
 spec:
   version: 8.5.3
   count: 1
-  nodeSelector:
-    cloud.google.com/gke-nodepool: masters        
   elasticsearchRef:
     name: elastic-masters
-  containers:
-  - name: kibana
-    resources:
-      requests:
-        memory: 8Gi
-        cpu: '3'
-      limits:
-        memory: 8Gi
-        cpu: '3' 
-  initContainers:
-  - name: sysctl
-    securityContext:
-      privileged: true
-      runAsUser: 0
-    command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']    
   config:
     xpack.fleet.agents.elasticsearch.hosts: ["https://elastic-masters-es-http.system.svc:9200"]
     xpack.fleet.agents.fleet_server.hosts: ["https://fleet-server-agent-http.system.svc:8220"]
@@ -282,6 +265,25 @@ spec:
             id: system-1
             package:
               name: system
+  podTemplate:
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: masters       
+      containers:
+      - name: kibana
+        resources:
+          requests:
+            memory: 16Gi
+            cpu: '8'
+          limits:
+            memory: 16Gi
+            cpu: '8' 
+      initContainers:
+      - name: sysctl
+        securityContext:
+          privileged: true
+          runAsUser: 0
+        command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']            
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
