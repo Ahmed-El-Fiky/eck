@@ -158,7 +158,7 @@ spec:
     podTemplate:
       spec:
         nodeSelector:
-          cloud.google.com/gke-nodepool: hot       
+          cloud.google.com/gke-nodepool: masters       
         containers:
         - name: elasticsearch
           resources:
