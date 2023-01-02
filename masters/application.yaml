@@ -290,11 +290,11 @@ spec:
         - name: agent
           resources:
             requests:
-              memory: 300Mi
-              cpu: 0.5
+              memory: 256Mi
+              cpu: 0.1
             limits:
-              memory: 300Mi
-              cpu: 0.5
+              memory: 256Mi
+              cpu: 0.1
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
