@@ -214,7 +214,7 @@ spec:
     config:
       node.attr.zone: europe-west1-b
       cluster.routing.allocation.awareness.attributes: zone
-      node.roles: [ "transform", "remote_cluster_client" ]
+      node.roles: [ "transform" ]
     volumeClaimTemplates:
     - metadata:
         name: elasticsearch-data
