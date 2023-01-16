@@ -272,7 +272,7 @@ spec:
             privileged: true
             runAsUser: 0
           command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']                  
-  - name: ingest
+  - name: ingest-b
     count: 1
     config:
       node.attr.zone: europe-west1-b
@@ -306,8 +306,43 @@ spec:
           securityContext:
             privileged: true
             runAsUser: 0
-          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']    
-  - name: coordinate
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+  - name: ingest-c
+    count: 1
+    config:
+      node.attr.zone: europe-west1-c
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: [ "ingest" ]
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: hot                    
+    podTemplate:
+      spec:
+        nodeSelector:
+          cloud.google.com/gke-nodepool: n-c4-r8       
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 8Gi
+              cpu: '4'
+            limits:
+              memory: 8Gi
+              cpu: '4' 
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']          
+  - name: coordinate-b
     count: 1
     config:
       node.attr.zone: europe-west1-b
@@ -341,8 +376,43 @@ spec:
           securityContext:
             privileged: true
             runAsUser: 0
-          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']   
-  - name: transform
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+  - name: coordinate-c
+    count: 1
+    config:
+      node.attr.zone: europe-west1-c
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: []
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: hot                    
+    podTemplate:
+      spec:
+        nodeSelector:
+          cloud.google.com/gke-nodepool: n-c4-r8       
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 8Gi
+              cpu: '4'
+            limits:
+              memory: 8Gi
+              cpu: '4' 
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']          
+  - name: transform-b
     count: 1
     config:
       node.attr.zone: europe-west1-b
@@ -376,7 +446,42 @@ spec:
           securityContext:
             privileged: true
             runAsUser: 0
-          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']                                     
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']         
+  - name: transform-c
+    count: 1
+    config:
+      node.attr.zone: europe-west1-c
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: [ "transform" ]
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: hot                    
+    podTemplate:
+      spec:
+        nodeSelector:
+          cloud.google.com/gke-nodepool: n-c8-r16       
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 16Gi
+              cpu: '8'
+            limits:
+              memory: 16Gi
+              cpu: '8' 
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']                              
 ---
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
