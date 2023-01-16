@@ -732,7 +732,6 @@ spec:
     apiVersion: kibana.k8s.elastic.co/v1
     kind: Kibana
     name: kibana
-    namespace: system
   minReplicas: 1
   maxReplicas: 4
   metrics:
