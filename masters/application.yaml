@@ -417,7 +417,7 @@ spec:
     config:
       node.attr.zone: europe-west1-b
       cluster.routing.allocation.awareness.attributes: zone
-      node.roles: [ "transform", "remote_cluster_client" ]
+      node.roles: [ "transform" ]
     volumeClaimTemplates:
     - metadata:
         name: elasticsearch-data
@@ -452,7 +452,7 @@ spec:
     config:
       node.attr.zone: europe-west1-c
       cluster.routing.allocation.awareness.attributes: zone
-      node.roles: [ "transform", "remote_cluster_client" ]
+      node.roles: [ "transform" ]
     volumeClaimTemplates:
     - metadata:
         name: elasticsearch-data
@@ -496,6 +496,7 @@ spec:
   config:
     xpack.fleet.agents.elasticsearch.hosts: ["https://elastic-masters-es-http.system.svc:9200"]
     xpack.fleet.agents.fleet_server.hosts: ["https://fleet-server-agent-http.system.svc:8220"]
+    monitoring.ui.ccs.enabled: false
     xpack.fleet.packages:
       - name: system
         version: latest
