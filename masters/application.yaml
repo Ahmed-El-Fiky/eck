@@ -11,7 +11,7 @@ spec:
     config:
       node.attr.zone: europe-west1-b
       cluster.routing.allocation.awareness.attributes: zone
-      node.roles: [ "master" ]              
+      node.roles: [ "master", "remote_cluster_client" ]              
     podTemplate:
       spec:
         nodeSelector:
