@@ -4,7 +4,7 @@ metadata:
   name: elastic-masters
   namespace: system
 spec:  
-  version: 8.5.3  
+  version: 8.6.0  
   nodeSets:
   - name: master-b
     count: 1
@@ -31,6 +31,31 @@ spec:
             privileged: true
             runAsUser: 0
           command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+  - name: master-c
+    count: 1
+    config:
+      node.attr.zone: europe-west1-c
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: [ "master" ]              
+    podTemplate:
+      spec:
+        nodeSelector:
+          cloud.google.com/gke-nodepool: masters       
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 16Gi
+              cpu: '8'
+            limits:
+              memory: 16Gi
+              cpu: '8' 
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']          
   - name: hot-b
     count: 1
     config:
@@ -66,7 +91,43 @@ spec:
           securityContext:
             privileged: true
             runAsUser: 0
-          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']          
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']    
+  - name: hot-c
+    count: 1
+    config:
+      node.attr.data: hot      
+      node.attr.zone: europe-west1-c
+      cluster.routing.allocation.awareness.attributes: zone
+      node.roles: [ "data_hot", "data_content" ]
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
+        storageClassName: hot                    
+    podTemplate:
+      spec:
+        nodeSelector:
+          cloud.google.com/gke-nodepool: hot       
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 8Gi
+              cpu: '3'
+            limits:
+              memory: 8Gi
+              cpu: '3' 
+        initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']                     
   - name: warm-b
     count: 1
     config:
@@ -251,7 +312,7 @@ metadata:
   name: kibana
   namespace: system
 spec:
-  version: 8.5.3
+  version: 8.6.0
   count: 1
   elasticsearchRef:
     name: elastic-masters
@@ -318,7 +379,7 @@ metadata:
   name: fleet-server
   namespace: system  
 spec:
-  version: 8.5.3
+  version: 8.6.0
   kibanaRef:
     name: kibana
   elasticsearchRefs:
@@ -340,7 +401,7 @@ metadata:
   name: elastic-agent
   namespace: system  
 spec:
-  version: 8.5.3
+  version: 8.6.0
   kibanaRef:
     name: kibana
   fleetServerRef: 
