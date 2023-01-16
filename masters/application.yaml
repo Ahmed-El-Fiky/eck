@@ -11,7 +11,7 @@ spec:
     config:
       node.attr.zone: europe-west1-b
       cluster.routing.allocation.awareness.attributes: zone
-      node.roles: [ "master", "remote_cluster_client" ]              
+      node.roles: [ "master" ]              
     podTemplate:
       spec:
         nodeSelector:
@@ -417,7 +417,7 @@ spec:
     config:
       node.attr.zone: europe-west1-b
       cluster.routing.allocation.awareness.attributes: zone
-      node.roles: [ "transform" ]
+      node.roles: [ "transform", "remote_cluster_client" ]
     volumeClaimTemplates:
     - metadata:
         name: elasticsearch-data
@@ -452,7 +452,7 @@ spec:
     config:
       node.attr.zone: europe-west1-c
       cluster.routing.allocation.awareness.attributes: zone
-      node.roles: [ "transform" ]
+      node.roles: [ "transform", "remote_cluster_client" ]
     volumeClaimTemplates:
     - metadata:
         name: elasticsearch-data
