@@ -57,7 +57,7 @@ spec:
             runAsUser: 0
           command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']          
   - name: hot-b
-    count: 2
+    count: 1
     config:
       node.attr.data: hot      
       node.attr.zone: europe-west1-b
