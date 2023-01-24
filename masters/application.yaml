@@ -900,7 +900,7 @@ spec:
         ]
         env:
         - name: ELASTICSEARCH_HOST
-          value: elastic-masters-es-http.system.svc
+          value: https://elastic-masters-es-http.system.svc
         - name: ELASTICSEARCH_PORT
           value: "9200"
         - name: ELASTICSEARCH_USERNAME
