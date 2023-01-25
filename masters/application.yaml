@@ -572,6 +572,7 @@ spec:
         automountServiceAccountToken: true
         securityContext:
           runAsUser: 0
+        containers:          
         - name: agent
           resources:
             requests:
