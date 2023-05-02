@@ -6,7 +6,7 @@ metadata:
 spec:
   schedule: "* * * * *"
   concurrencyPolicy: Forbid
-  successfulJobsHistoryLimit: 2
+#  successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 2  
   jobTemplate:
     spec:
@@ -25,6 +25,8 @@ spec:
                   "--benchmark",
                   "gke-1.2.0",
                   "--json",
+                  "--outputfile",
+                  "/home/kubernetes/result.json",
                 ]
               volumeMounts:
                 - name: var-lib-kubelet
