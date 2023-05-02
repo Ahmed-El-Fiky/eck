@@ -18,6 +18,8 @@ spec:
               "node,policies,managedservices",
               "--benchmark",
               "gke-1.2.0",
+              "--v",
+              "3",
             ]
           volumeMounts:
             - name: var-lib-kubelet
