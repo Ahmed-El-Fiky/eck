@@ -1,49 +1,51 @@
 ---
 apiVersion: batch/v1
-kind: Job
+kind: CronJob
 metadata:
   name: kube-bench
 spec:
-  template:
+  schedule: "* * * * *"
+  jobTemplate:
     spec:
-      schedule: "* * * * *"
-      hostPID: true
-      containers:
-        - name: kube-bench
-          image: docker.io/aquasec/kube-bench:latest
-          command:
-            [
-              "kube-bench",
-              "run",
-              "--targets",
-              "node,policies,managedservices",
-              "--benchmark",
-              "gke-1.2.0",
-            ]
-          volumeMounts:
+      template:
+        spec:
+          hostPID: true
+          containers:
+            - name: kube-bench
+              image: docker.io/aquasec/kube-bench:latest
+              command:
+                [
+                  "kube-bench",
+                  "run",
+                  "--targets",
+                  "node,policies,managedservices",
+                  "--benchmark",
+                  "gke-1.2.0",
+                ]
+              volumeMounts:
+                - name: var-lib-kubelet
+                  mountPath: /var/lib/kubelet
+                  readOnly: true
+                - name: etc-systemd
+                  mountPath: /etc/systemd
+                  readOnly: true
+                - name: etc-kubernetes
+                  mountPath: /etc/kubernetes
+                  readOnly: true
+                - name: home-kubernetes
+                  mountPath: /home/kubernetes
+                  readOnly: true
+          restartPolicy: Never
+          volumes:
             - name: var-lib-kubelet
-              mountPath: /var/lib/kubelet
-              readOnly: true
+              hostPath:
+                path: "/var/lib/kubelet"
             - name: etc-systemd
-              mountPath: /etc/systemd
-              readOnly: true
+              hostPath:
+                path: "/etc/systemd"
             - name: etc-kubernetes
-              mountPath: /etc/kubernetes
-              readOnly: true
+              hostPath:
+                path: "/etc/kubernetes"
             - name: home-kubernetes
-              mountPath: /home/kubernetes
-              readOnly: true
-      restartPolicy: Never
-      volumes:
-        - name: var-lib-kubelet
-          hostPath:
-            path: "/var/lib/kubelet"
-        - name: etc-systemd
-          hostPath:
-            path: "/etc/systemd"
-        - name: etc-kubernetes
-          hostPath:
-            path: "/etc/kubernetes"
-        - name: home-kubernetes
-          hostPath:
-            path: "/home/kubernetes"
+              hostPath:
+                path: "/home/kubernetes"
