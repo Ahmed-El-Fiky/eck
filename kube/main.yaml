@@ -13,8 +13,6 @@ spec:
           command:
             [
               "kube-bench",
-              "-v",
-              "1",
               "run",
               "--targets",
               "node,policies,managedservices",
