@@ -13,13 +13,13 @@ spec:
           command:
             [
               "kube-bench",
+              "-v",
+              "1",
               "run",
               "--targets",
               "node,policies,managedservices",
               "--benchmark",
               "gke-1.2.0",
-              "-v",
-              "1",
             ]
           volumeMounts:
             - name: var-lib-kubelet
