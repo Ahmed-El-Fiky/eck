@@ -40,7 +40,7 @@ spec:
                   readOnly: true
                 - name: home-kubernetes
                   mountPath: /home/kubernetes
-                  readOnly: true
+#                  readOnly: true
           restartPolicy: OnFailure
           volumes:
             - name: var-lib-kubelet
