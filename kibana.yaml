@@ -1,0 +1,36 @@
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: elasticsearch
+spec:
+  version: 8.16.0
+  count: 2
+  elasticsearchRef:
+    name: hs-elastic
+    namespace: elasticsearch
+  http:
+    service:
+      metadata:
+        annotations:
+          cloud.google.com/load-balancer-type: External
+      spec:
+        type: LoadBalancer
+  podTemplate:
+    spec:
+      nodeSelector:
+        cloud.google.com/gke-nodepool: fleet-kibana-pool
+      initContainers:
+        - name: sysctl
+          securityContext:
+            privileged: true
+          command: ["sh", "-c", "sysctl -w vm.max_map_count=262144"]
+      containers:
+        - name: kibana
+          resources:
+            requests:
+              memory: 4Gi
+              cpu: "2"
+            limits:
+              memory: 4Gi
+              cpu: "2"
