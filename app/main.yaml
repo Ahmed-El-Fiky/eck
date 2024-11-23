@@ -15,7 +15,7 @@ spec:
       podTemplate:
         spec:
           nodeSelector:
-            cloud.google.com/gke-nodepool: eck-poolv2  # Ensure node pool spans multiple zones
+            cloud.google.com/gke-nodepool: master-pool  # Use your master node pool
           affinity:
             podAntiAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
@@ -59,7 +59,7 @@ spec:
       podTemplate:
         spec:
           nodeSelector:
-            cloud.google.com/gke-nodepool: eck-poolv2
+            cloud.google.com/gke-nodepool: data-pool  # Use your data node pool
           affinity:
             podAntiAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
@@ -93,7 +93,7 @@ spec:
       podTemplate:
         spec:
           nodeSelector:
-            cloud.google.com/gke-nodepool: eck-poolv2
+            cloud.google.com/gke-nodepool: ingest-pool  # Use your ingest node pool
           affinity:
             podAntiAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
@@ -127,7 +127,7 @@ spec:
       podTemplate:
         spec:
           nodeSelector:
-            cloud.google.com/gke-nodepool: eck-poolv2
+            cloud.google.com/gke-nodepool: coordinate-pool  # Use your coordinate node pool
           affinity:
             podAntiAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
@@ -164,7 +164,7 @@ spec:
       podTemplate:
         spec:
           nodeSelector:
-            cloud.google.com/gke-nodepool: eck-poolv2
+            cloud.google.com/gke-nodepool: transform-pool  # Use your transform node pool
           affinity:
             podAntiAffinity:
               requiredDuringSchedulingIgnoredDuringExecution:
@@ -210,7 +210,7 @@ spec:
   podTemplate:
     spec:
       nodeSelector:
-        cloud.google.com/gke-nodepool: eck-poolv2
+        cloud.google.com/gke-nodepool: fleet-kibana-pool  # Use your fleet-kibana node pool
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -254,7 +254,7 @@ spec:
     podTemplate:
       spec:
         nodeSelector:
-          cloud.google.com/gke-nodepool: eck-poolv2
+          cloud.google.com/gke-nodepool: fleet-kibana-pool  # Use your fleet-kibana node pool
         affinity:
           podAntiAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
@@ -296,6 +296,7 @@ spec:
   daemonSet:
     podTemplate:
       spec:
+        # Ensure deployment on all nodes, regardless of zone
         tolerations:
           - key: node-role.kubernetes.io/master
             effect: NoSchedule
