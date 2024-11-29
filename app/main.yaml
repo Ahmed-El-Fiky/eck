@@ -1,473 +1,241 @@
-# Elasticsearch Cluster Configuration
+---
+# Namespace for Elastic Stack
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: elastic
+---
+# Elasticsearch Deployment
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
   name: elastic-cluster
-  namespace: elasticsearch
+  namespace: elastic
 spec:
-  version: 8.16.0
+  version: 8.16.1
   nodeSets:
     # Master Nodes
-    - name: master
+    - name: master-nodes
       count: 3
       config:
         node.roles: ["master"]
-        cluster.routing.allocation.awareness.attributes: zone
+        cluster.name: "elastic-cluster"
       podTemplate:
         spec:
           nodeSelector:
-            cloud.google.com/gke-nodepool: master-pool  # Your master node pool
-          affinity:
-            podAntiAffinity:
-              preferredDuringSchedulingIgnoredDuringExecution:
-                - weight: 100
-                  podAffinityTerm:
-                    labelSelector:
-                      matchLabels:
-                        elasticsearch.k8s.elastic.co/cluster-name: elastic-cluster
-                        elasticsearch.k8s.elastic.co/node-master: "true"
-                    topologyKey: topology.kubernetes.io/zone
+            role: master
           containers:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: 16Gi
-                  cpu: '4'
+                  memory: "4Gi"
+                  cpu: "2"
                 limits:
-                  memory: 16Gi
-                  cpu: '4'
-          initContainers:
-            - name: sysctl
-              securityContext:
-                privileged: true
-                runAsUser: 0
-              command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+                  memory: "4Gi"
+                  cpu: "2"
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-master-data
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            storageClassName: ssd-storage
+            resources:
+              requests:
+                storage: 50Gi
 
     # Data Nodes
-    - name: data
-      count: 4
+    - name: data-nodes
+      count: 6
       config:
         node.roles: ["data"]
-        cluster.routing.allocation.awareness.attributes: zone
-        # Enable compression
-        index.codec: best_compression
+        cluster.routing.allocation.awareness.attributes: "zone"
+      podTemplate:
+        spec:
+          nodeSelector:
+            role: data
+          containers:
+            - name: elasticsearch
+              resources:
+                requests:
+                  memory: "64Gi"
+                  cpu: "16"
+                limits:
+                  memory: "64Gi"
+                  cpu: "16"
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
           spec:
-            accessModes:
-              - ReadWriteOnce
+            accessModes: ["ReadWriteOnce"]
+            storageClassName: ssd-storage
             resources:
               requests:
-                storage: 4.5Ti  # Adjusted storage per node
-            storageClassName: standard
-      podTemplate:
-        spec:
-          nodeSelector:
-            cloud.google.com/gke-nodepool: data-pool  # Your data node pool
-          affinity:
-            podAntiAffinity:
-              preferredDuringSchedulingIgnoredDuringExecution:
-                - weight: 100
-                  podAffinityTerm:
-                    labelSelector:
-                      matchLabels:
-                        elasticsearch.k8s.elastic.co/cluster-name: elastic-cluster
-                        elasticsearch.k8s.elastic.co/node-data: "true"
-                  topologyKey: topology.kubernetes.io/zone
-          containers:
-            - name: elasticsearch
-              resources:
-                requests:
-                  memory: 32Gi
-                  cpu: '8'
-                limits:
-                  memory: 32Gi
-                  cpu: '8'
-          initContainers:
-            - name: sysctl
-              securityContext:
-                privileged: true
-                runAsUser: 0
-              command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+                storage: 4Ti
 
     # Ingest Nodes
-    - name: ingest
+    - name: ingest-nodes
       count: 2
       config:
         node.roles: ["ingest"]
-        cluster.routing.allocation.awareness.attributes: zone
       podTemplate:
         spec:
           nodeSelector:
-            cloud.google.com/gke-nodepool: ingest-pool  # Your ingest node pool
-          tolerations:
-            - key: "cloud.google.com/gke-preemptible"
-              operator: "Equal"
-              value: "true"
-              effect: "NoSchedule"
-          affinity:
-            podAntiAffinity:
-              preferredDuringSchedulingIgnoredDuringExecution:
-                - weight: 100
-                  podAffinityTerm:
-                    labelSelector:
-                      matchLabels:
-                        elasticsearch.k8s.elastic.co/cluster-name: elastic-cluster
-                        elasticsearch.k8s.elastic.co/node-ingest: "true"
-                    topologyKey: topology.kubernetes.io/zone
+            role: shared
           containers:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: 16Gi
-                  cpu: '4'
+                  memory: "4Gi"
+                  cpu: "2"
                 limits:
-                  memory: 16Gi
-                  cpu: '4'
-          initContainers:
-            - name: sysctl
-              securityContext:
-                privileged: true
-                runAsUser: 0
-              command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+                  memory: "4Gi"
+                  cpu: "2"
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-ingest-data
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            storageClassName: ssd-storage
+            resources:
+              requests:
+                storage: 50Gi
 
-    # Coordinate Nodes
-    - name: coordinate
+    # Coordinator Nodes
+    - name: coordinator-nodes
       count: 2
       config:
-        node.roles: []
-        cluster.routing.allocation.awareness.attributes: zone
+        node.roles: ["coordinating_only"]
       podTemplate:
         spec:
           nodeSelector:
-            cloud.google.com/gke-nodepool: coordinate-pool  # Your coordinate node pool
-          tolerations:
-            - key: "cloud.google.com/gke-preemptible"
-              operator: "Equal"
-              value: "true"
-              effect: "NoSchedule"
-          affinity:
-            podAntiAffinity:
-              preferredDuringSchedulingIgnoredDuringExecution:
-                - weight: 100
-                  podAffinityTerm:
-                    labelSelector:
-                      matchLabels:
-                        elasticsearch.k8s.elastic.co/cluster-name: elastic-cluster
-                        elasticsearch.k8s.elastic.co/node-master: "false"
-                        elasticsearch.k8s.elastic.co/node-data: "false"
-                        elasticsearch.k8s.elastic.co/node-ingest: "false"
-                        elasticsearch.k8s.elastic.co/node-transform: "false"
-                    topologyKey: topology.kubernetes.io/zone
+            role: shared
           containers:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: 16Gi
-                  cpu: '4'
+                  memory: "4Gi"
+                  cpu: "2"
                 limits:
-                  memory: 16Gi
-                  cpu: '4'
-          initContainers:
-            - name: sysctl
-              securityContext:
-                privileged: true
-                runAsUser: 0
-              command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+                  memory: "4Gi"
+                  cpu: "2"
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-coordinator-data
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            storageClassName: ssd-storage
+            resources:
+              requests:
+                storage: 50Gi
 
     # Transform Nodes
-    - name: transform
+    - name: transform-nodes
       count: 2
       config:
         node.roles: ["transform"]
-        cluster.routing.allocation.awareness.attributes: zone
       podTemplate:
         spec:
           nodeSelector:
-            cloud.google.com/gke-nodepool: transform-pool  # Your transform node pool
-          tolerations:
-            - key: "cloud.google.com/gke-preemptible"
-              operator: "Equal"
-              value: "true"
-              effect: "NoSchedule"
-          affinity:
-            podAntiAffinity:
-              preferredDuringSchedulingIgnoredDuringExecution:
-                - weight: 100
-                  podAffinityTerm:
-                    labelSelector:
-                      matchLabels:
-                        elasticsearch.k8s.elastic.co/cluster-name: elastic-cluster
-                        elasticsearch.k8s.elastic.co/node-transform: "true"
-                    topologyKey: topology.kubernetes.io/zone
+            role: shared
           containers:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: 16Gi
-                  cpu: '4'
+                  memory: "4Gi"
+                  cpu: "2"
                 limits:
-                  memory: 16Gi
-                  cpu: '4'
-          initContainers:
-            - name: sysctl
-              securityContext:
-                privileged: true
-                runAsUser: 0
-              command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+                  memory: "4Gi"
+                  cpu: "2"
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-transform-data
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            storageClassName: ssd-storage
+            resources:
+              requests:
+                storage: 50Gi
 
 ---
-
-# Kibana Configuration
+# Kibana Deployment
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
   name: kibana
-  namespace: elasticsearch
+  namespace: elastic
 spec:
-  version: 8.16.0
-  count: 2
+  version: 8.16.1
+  count: 1
   elasticsearchRef:
     name: elastic-cluster
-    namespace: elasticsearch
-  http:
-    service:
-      metadata:
-        annotations:
-          cloud.google.com/load-balancer-type: External
-      spec:
-        type: LoadBalancer
   podTemplate:
     spec:
       nodeSelector:
-        cloud.google.com/gke-nodepool: fleet-kibana-pool  # Your Kibana node pool
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app: kibana
-                topologyKey: topology.kubernetes.io/zone
+        role: shared
       containers:
         - name: kibana
           resources:
             requests:
-              memory: 16Gi
-              cpu: '4'
+              memory: "4Gi"
+              cpu: "2"
             limits:
-              memory: 16Gi
-              cpu: '4'
-      initContainers:
-        - name: sysctl
-          securityContext:
-            privileged: true
-            runAsUser: 0
-          command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+              memory: "4Gi"
+              cpu: "2"
 
 ---
-
-# Fleet Server Configuration
+# Fleet Server Deployment
 apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
 metadata:
   name: fleet-server
-  namespace: elasticsearch
+  namespace: elastic
 spec:
-  version: 8.16.0
-  kibanaRef:
-    name: kibana
-    namespace: elasticsearch
+  version: 8.16.1
   elasticsearchRefs:
     - name: elastic-cluster
-      namespace: elasticsearch
-  mode: fleet
   fleetServerEnabled: true
-  deployment:
-    replicas: 2
-    podTemplate:
-      spec:
-        nodeSelector:
-          cloud.google.com/gke-nodepool: fleet-kibana-pool  # Your Kibana node pool
-        affinity:
-          podAntiAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-              - weight: 100
-                podAffinityTerm:
-                  labelSelector:
-                    matchLabels:
-                      app: fleet-server
-                  topologyKey: topology.kubernetes.io/zone
-        serviceAccountName: fleet-server
-        automountServiceAccountToken: true
-        securityContext:
-          runAsUser: 1000
-        containers:
-          - name: agent
-            resources:
-              requests:
-                memory: 4Gi
-                cpu: '2'
-              limits:
-                memory: 4Gi
-                cpu: '2'
-        initContainers:
-          - name: sysctl
-            securityContext:
-              privileged: true
-              runAsUser: 0
-            command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+  policy:
+    id: fleet-policy
+  replicas: 2
+  podTemplate:
+    spec:
+      nodeSelector:
+        role: shared
+      containers:
+        - name: fleet-server
+          resources:
+            requests:
+              memory: "4Gi"
+              cpu: "2"
+            limits:
+              memory: "4Gi"
+              cpu: "2"
 
 ---
-
-# Elastic Agent Configuration
+# Elastic Agent Deployment
 apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
 metadata:
   name: elastic-agent
-  namespace: elasticsearch
+  namespace: elastic
 spec:
-  version: 8.16.0
+  version: 8.16.1
+  elasticsearchRefs:
+    - name: elastic-cluster
   fleetServerRef:
     name: fleet-server
-    namespace: elasticsearch
-  mode: fleet
-  daemonSet:
-    podTemplate:
-      spec:
-        tolerations:
-          - key: node-role.kubernetes.io/master
-            effect: NoSchedule
-          - key: node-role.kubernetes.io/control-plane
-            effect: NoSchedule
-          - operator: Exists
-            effect: NoExecute
-        serviceAccountName: elastic-agent
-        hostNetwork: true
-        dnsPolicy: ClusterFirstWithHostNet
-        automountServiceAccountToken: true
-        securityContext:
-          runAsUser: 1000
-        containers:
-          - name: agent
-            resources:
-              requests:
-                memory: 2Gi
-                cpu: '1'
-              limits:
-                memory: 2Gi
-                cpu: '1'
-            volumeMounts:
-              - name: gcp-credentials
-                mountPath: /usr/share/elastic-agent/gcp
-                readOnly: true
-        volumes:
-          - name: gcp-credentials
-            secret:
-              secretName: gcp-credentials
-        initContainers:
-          - name: sysctl
-            securityContext:
-              privileged: true
-              runAsUser: 0
-            command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
-
----
-
-# Fleet Server RBAC
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: fleet-server
-rules:
-  - apiGroups: [""]
-    resources:
-      - pods
-      - namespaces
-      - nodes
-    verbs:
-      - get
-      - watch
-      - list
-  - apiGroups: ["coordination.k8s.io"]
-    resources:
-      - leases
-    verbs:
-      - get
-      - create
-      - update
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: fleet-server
-  namespace: elasticsearch
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: fleet-server
-subjects:
-  - kind: ServiceAccount
-    name: fleet-server
-    namespace: elasticsearch
-roleRef:
-  kind: ClusterRole
-  name: fleet-server
-  apiGroup: rbac.authorization.k8s.io
-
----
-
-# Elastic Agent RBAC
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: elastic-agent
-rules:
-  - apiGroups: [""]
-    resources:
-      - namespaces
-      - pods
-      - nodes
-      - nodes/metrics
-      - nodes/proxy
-      - nodes/stats
-      - events
-    verbs:
-      - get
-      - watch
-      - list
-  - nonResourceURLs:
-      - /metrics
-    verbs:
-      - get
-      - watch
-      - list
-  - apiGroups: ["coordination.k8s.io"]
-    resources:
-      - leases
-    verbs:
-      - get
-      - create
-      - update
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: elastic-agent
-  namespace: elasticsearch
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: elastic-agent
-subjects:
-  - kind: ServiceAccount
-    name: elastic-agent
-    namespace: elasticsearch
-roleRef:
-  kind: ClusterRole
-  name: elastic-agent
-  apiGroup: rbac.authorization.k8s.io
+  daemonSet: false
+  replicas: 2
+  podTemplate:
+    spec:
+      nodeSelector:
+        role: shared
+      containers:
+        - name: elastic-agent
+          resources:
+            requests:
+              memory: "4Gi"
+              cpu: "2"
+            limits:
+              memory: "4Gi"
+              cpu: "2"
