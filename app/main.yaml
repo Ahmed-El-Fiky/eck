@@ -34,17 +34,7 @@ spec:
                 limits:
                   memory: "4Gi"
                   cpu: "2"
-      volumeClaimTemplates:
-        - metadata:
-            name: elasticsearch-data
-          spec:
-            accessModes: ["ReadWriteOnce"]
-            storageClassName: premium-rwo
-            resources:
-              requests:
-                storage: 50Gi
-
-    # Data Nodes (StatefulSet for persistence)
+    # Data Nodes (2 StatefulSet for persistence)
     - name: data-nodes
       count: 2
       config:
@@ -77,102 +67,74 @@ spec:
             storageClassName: premium-rwo
             resources:
               requests:
-                storage: 24Ti  # Each data node gets 24Ti storage
+                storage: 24Ti
 
-    # Ingest Nodes (2 for HA)
-    - name: ingest-nodes
-      count: 2
-      config:
-        node.roles: ["ingest"]
-        cluster.routing.allocation.awareness.attributes: "zone"
-      podTemplate:
-        spec:
-          nodeSelector:
-            role: shared
-          initContainers:
-            - name: sysctl
-              securityContext:
-                privileged: true
-                runAsUser: 0
-              command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
-          containers:
-            - name: elasticsearch
-              resources:
-                requests:
-                  memory: "4Gi"
-                  cpu: "2"
-                limits:
-                  memory: "4Gi"
-                  cpu: "2"
-      volumeClaimTemplates:
-        - metadata:
-            name: elasticsearch-data
-          spec:
-            accessModes: ["ReadWriteOnce"]
-            storageClassName: premium-rwo
+---
+
+# Fleet Server Deployment (2 replicas for HA)
+apiVersion: agent.k8s.elastic.co/v1alpha1
+kind: Agent
+metadata:
+  name: fleet-server
+  namespace: elastic
+spec:
+  version: 8.16.1
+  elasticsearchRefs:
+    - name: elastic-cluster
+  deployment:
+    replicas: 2  # High Availability
+    podTemplate:
+      spec:
+        nodeSelector:
+          role: shared
+        initContainers:
+          - name: sysctl
+            securityContext:
+              privileged: true
+              runAsUser: 0
+            command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+        containers:
+          - name: fleet-server
+            image: "docker.elastic.co/beats/elastic-agent:8.16.1"
             resources:
               requests:
-                storage: 50Gi
+                memory: "4Gi"
+                cpu: "2"
+              limits:
+                memory: "4Gi"
+                cpu: "2"
 
-    # Coordinator Nodes (2 for HA)
-    - name: coordinator-nodes
-      count: 2
-      config:
-        node.roles: []
-        cluster.routing.allocation.awareness.attributes: "zone"
-      podTemplate:
-        spec:
-          nodeSelector:
-            role: shared
-          initContainers:
-            - name: sysctl
-              securityContext:
-                privileged: true
-                runAsUser: 0
-              command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
-          containers:
-            - name: elasticsearch
-              resources:
-                requests:
-                  memory: "4Gi"
-                  cpu: "2"
-                limits:
-                  memory: "4Gi"
-                  cpu: "2"
-      volumeClaimTemplates:
-        - metadata:
-            name: elasticsearch-data
-          spec:
-            accessModes: ["ReadWriteOnce"]
-            storageClassName: premium-rwo
+---
+
+# Elastic Agent Deployment (2 replicas for HA)
+apiVersion: agent.k8s.elastic.co/v1alpha1
+kind: Agent
+metadata:
+  name: elastic-agent
+  namespace: elastic
+spec:
+  version: 8.16.1
+  elasticsearchRefs:
+    - name: elastic-cluster
+  deployment:
+    replicas: 2  # High Availability
+    podTemplate:
+      spec:
+        nodeSelector:
+          role: shared
+        initContainers:
+          - name: sysctl
+            securityContext:
+              privileged: true
+              runAsUser: 0
+            command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+        containers:
+          - name: elastic-agent
+            image: "docker.elastic.co/beats/elastic-agent:8.16.1"
             resources:
               requests:
-                storage: 50Gi
-
-    # Transform Nodes (2 for HA)
-    - name: transform-nodes
-      count: 2
-      config:
-        node.roles: ["transform"]
-        cluster.routing.allocation.awareness.attributes: "zone"
-      podTemplate:
-        spec:
-          nodeSelector:
-            role: shared
-          initContainers:
-            - name: sysctl
-              securityContext:
-                privileged: true
-                runAsUser: 0
-              command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
-          containers:
-            - name: elasticsearch
-              resources:
-                requests:
-                  memory: "4Gi"
-                  cpu: "2"
-                limits:
-                  memory: "4Gi"
-                  cpu: "2"
-      volumeClaimTemplates:
-        - 
+                memory: "4Gi"
+                cpu: "2"
+              limits:
+                memory: "4Gi"
+                cpu: "2"
