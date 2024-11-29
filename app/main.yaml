@@ -23,11 +23,11 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "2Gi"
-                  cpu: "1"
+                  memory: "4Gi"
+                  cpu: "2"
                 limits:
-                  memory: "2Gi"
-                  cpu: "1"
+                  memory: "4Gi"
+                  cpu: "2"
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -52,8 +52,8 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "16Gi"  # Adjusted to 16Gi memory per data node
-                  cpu: "4"        # Adjusted to 4 CPUs per data node
+                  memory: "32Gi"  # Adjusted to 16Gi memory per data node
+                  cpu: "8"        # Adjusted to 4 CPUs per data node
                 limits:
                   memory: "32Gi"  # Limit adjusted to 32Gi memory
                   cpu: "8"        # Limit adjusted to 8 CPUs per data node
@@ -81,11 +81,11 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "2Gi"
-                  cpu: "1"
+                  memory: "4Gi"
+                  cpu: "2"
                 limits:
-                  memory: "2Gi"
-                  cpu: "1"
+                  memory: "4Gi"
+                  cpu: "2"
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -110,11 +110,11 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "2Gi"
-                  cpu: "1"
+                  memory: "4Gi"
+                  cpu: "2"
                 limits:
-                  memory: "2Gi"
-                  cpu: "1"
+                  memory: "4Gi"
+                  cpu: "2"
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -139,11 +139,11 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "2Gi"
-                  cpu: "1"
+                  memory: "4Gi"
+                  cpu: "2"
                 limits:
-                  memory: "2Gi"
-                  cpu: "1"
+                  memory: "4Gi"
+                  cpu: "2"
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -174,11 +174,11 @@ spec:
             image: "docker.elastic.co/beats/elastic-agent:8.16.1"  # Fleet Server image
             resources:
               requests:
-                memory: "2Gi"
-                cpu: "1"
+                memory: "4Gi"
+                cpu: "2"
               limits:
-                memory: "2Gi"
-                cpu: "1"
+                memory: "4Gi"
+                cpu: "2"
 
 ---
 # Elastic Agent Deployment (2 replicas for HA)
@@ -200,8 +200,8 @@ spec:
             image: "docker.elastic.co/beats/elastic-agent:8.16.1"  # Elastic Agent image
             resources:
               requests:
-                memory: "2Gi"
-                cpu: "1"
+                memory: "4Gi"
+                cpu: "2"
               limits:
-                memory: "2Gi"
-                cpu: "1"
+                memory: "4Gi"
+                cpu: "2"
