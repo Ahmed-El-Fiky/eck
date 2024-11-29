@@ -1,10 +1,4 @@
 ---
-# Namespace for Elastic Stack
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: elastic
----
 # Elasticsearch Deployment
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
@@ -14,12 +8,13 @@ metadata:
 spec:
   version: 8.16.1
   nodeSets:
-    # Master Nodes
+    # Master Nodes (3 for HA)
     - name: master-nodes
       count: 3
       config:
         node.roles: ["master"]
         cluster.name: "elastic-cluster"
+        cluster.routing.allocation.awareness.attributes: "zone"  # Zone awareness
       podTemplate:
         spec:
           nodeSelector:
@@ -28,8 +23,8 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "2Gi"  # Adjusted to 2Gi memory per master node
-                  cpu: "1"       # Adjusted to 1 CPU per master node
+                  memory: "2Gi"
+                  cpu: "1"
                 limits:
                   memory: "2Gi"
                   cpu: "1"
@@ -43,12 +38,12 @@ spec:
               requests:
                 storage: 50Gi
 
-    # Data Nodes
+    # Data Nodes (2 nodes across 2 zones, 1 node per zone, 24TB per node)
     - name: data-nodes
-      count: 6
+      count: 2
       config:
         node.roles: ["data"]
-        cluster.routing.allocation.awareness.attributes: "zone"
+        cluster.routing.allocation.awareness.attributes: "zone"  # Zone awareness for data nodes
       podTemplate:
         spec:
           nodeSelector:
@@ -70,13 +65,14 @@ spec:
             storageClassName: ssd-storage
             resources:
               requests:
-                storage: 4Ti
+                storage: 24Ti  # Each data node gets 24Ti storage
 
-    # Ingest Nodes
+    # Ingest Nodes (2 for HA)
     - name: ingest-nodes
       count: 2
       config:
         node.roles: ["ingest"]
+        cluster.routing.allocation.awareness.attributes: "zone"
       podTemplate:
         spec:
           nodeSelector:
@@ -85,8 +81,8 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "2Gi"  # Adjusted to 2Gi memory per ingest node
-                  cpu: "1"        # Adjusted to 1 CPU per ingest node
+                  memory: "2Gi"
+                  cpu: "1"
                 limits:
                   memory: "2Gi"
                   cpu: "1"
@@ -100,11 +96,12 @@ spec:
               requests:
                 storage: 50Gi
 
-    # Coordinator Nodes
+    # Coordinator Nodes (2 for HA)
     - name: coordinator-nodes
       count: 2
       config:
         node.roles: ["coordinating_only"]
+        cluster.routing.allocation.awareness.attributes: "zone"
       podTemplate:
         spec:
           nodeSelector:
@@ -113,8 +110,8 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "2Gi"  # Adjusted to 2Gi memory per coordinator node
-                  cpu: "1"        # Adjusted to 1 CPU per coordinator node
+                  memory: "2Gi"
+                  cpu: "1"
                 limits:
                   memory: "2Gi"
                   cpu: "1"
@@ -128,11 +125,12 @@ spec:
               requests:
                 storage: 50Gi
 
-    # Transform Nodes
+    # Transform Nodes (2 for HA)
     - name: transform-nodes
       count: 2
       config:
         node.roles: ["transform"]
+        cluster.routing.allocation.awareness.attributes: "zone"
       podTemplate:
         spec:
           nodeSelector:
@@ -141,8 +139,8 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "2Gi"  # Adjusted to 2Gi memory per transform node
-                  cpu: "1"        # Adjusted to 1 CPU per transform node
+                  memory: "2Gi"
+                  cpu: "1"
                 limits:
                   memory: "2Gi"
                   cpu: "1"
@@ -157,7 +155,7 @@ spec:
                 storage: 50Gi
 
 ---
-# Fleet Server Deployment
+# Fleet Server Deployment (2 replicas for HA)
 apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
 metadata:
@@ -168,22 +166,22 @@ spec:
   elasticsearchRefs:
     - name: elastic-cluster
   deployment:
-    replicas: 1   # Single Fleet Server for HA
+    replicas: 2   # 2 replicas for HA setup
     podTemplate:
       spec:
         containers:
           - name: fleet-server
-            image: "docker.elastic.co/beats/elastic-agent:8.16.1"  # Add Fleet Server image
+            image: "docker.elastic.co/beats/elastic-agent:8.16.1"  # Fleet Server image
             resources:
               requests:
-                memory: "2Gi"  # Adjusted to 2Gi memory for fleet server
-                cpu: "1"        # Adjusted to 1 CPU for fleet server
+                memory: "2Gi"
+                cpu: "1"
               limits:
                 memory: "2Gi"
                 cpu: "1"
 
 ---
-# Elastic Agent Deployment
+# Elastic Agent Deployment (2 replicas for HA)
 apiVersion: agent.k8s.elastic.co/v1alpha1
 kind: Agent
 metadata:
@@ -193,16 +191,17 @@ spec:
   version: 8.16.1
   elasticsearchRefs:
     - name: elastic-cluster
-  daemonSet:
+  deployment:
+    replicas: 2   # 2 replicas for HA setup
     podTemplate:
       spec:
         containers:
           - name: elastic-agent
-            image: "docker.elastic.co/beats/elastic-agent:8.16.1"  # Add Elastic Agent image
+            image: "docker.elastic.co/beats/elastic-agent:8.16.1"  # Elastic Agent image
             resources:
               requests:
-                memory: "2Gi"  # Adjusted to 2Gi memory for agent
-                cpu: "1"        # Adjusted to 1 CPU for agent
+                memory: "2Gi"
+                cpu: "1"
               limits:
                 memory: "2Gi"
                 cpu: "1"
