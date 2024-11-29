@@ -1,5 +1,5 @@
 ---
-# Elasticsearch Deployment
+# Elasticsearch Stateful Deployment
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
@@ -44,7 +44,7 @@ spec:
               requests:
                 storage: 50Gi
 
-    # Data Nodes (2 nodes across 2 zones, 1 node per zone, 24TB per node)
+    # Data Nodes (StatefulSet for persistence)
     - name: data-nodes
       count: 2
       config:
@@ -77,7 +77,7 @@ spec:
             storageClassName: standard-rwo
             resources:
               requests:
-                storage: 5Ti  # Each data node gets 24Ti storage
+                storage: 24Ti  # Each data node gets 24Ti storage
 
     # Ingest Nodes (2 for HA)
     - name: ingest-nodes
@@ -175,75 +175,4 @@ spec:
                   memory: "4Gi"
                   cpu: "2"
       volumeClaimTemplates:
-        - metadata:
-            name: elasticsearch-data
-          spec:
-            accessModes: ["ReadWriteOnce"]
-            storageClassName: standard-rwo
-            resources:
-              requests:
-                storage: 50Gi
-
----
-# Fleet Server Deployment (2 replicas for HA)
-apiVersion: agent.k8s.elastic.co/v1alpha1
-kind: Agent
-metadata:
-  name: fleet-server
-  namespace: elastic
-spec:
-  version: 8.16.1
-  elasticsearchRefs:
-    - name: elastic-cluster
-  deployment:
-    replicas: 2   # 2 replicas for HA setup
-    podTemplate:
-      spec:
-        initContainers:
-          - name: sysctl
-            securityContext:
-              privileged: true
-              runAsUser: 0
-            command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
-        containers:
-          - name: fleet-server
-            image: "docker.elastic.co/beats/elastic-agent:8.16.1"  # Fleet Server image
-            resources:
-              requests:
-                memory: "4Gi"
-                cpu: "2"
-              limits:
-                memory: "4Gi"
-                cpu: "2"
-
----
-# Elastic Agent Deployment (2 replicas for HA)
-apiVersion: agent.k8s.elastic.co/v1alpha1
-kind: Agent
-metadata:
-  name: elastic-agent
-  namespace: elastic
-spec:
-  version: 8.16.1
-  elasticsearchRefs:
-    - name: elastic-cluster
-  deployment:
-    replicas: 2   # 2 replicas for HA setup
-    podTemplate:
-      spec:
-        initContainers:
-          - name: sysctl
-            securityContext:
-              privileged: true
-              runAsUser: 0
-            command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
-        containers:
-          - name: elastic-agent
-            image: "docker.elastic.co/beats/elastic-agent:8.16.1"  # Elastic Agent image
-            resources:
-              requests:
-                memory: "4Gi"
-                cpu: "2"
-              limits:
-                memory: "4Gi"
-                cpu: "2"
+        - 
