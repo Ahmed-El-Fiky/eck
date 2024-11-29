@@ -193,7 +193,6 @@ spec:
   version: 8.16.1
   elasticsearchRefs:
     - name: elastic-cluster
-  fleetServerEnabled: true
   deployment:
     replicas: 2
     podTemplate:
@@ -221,8 +220,6 @@ spec:
   version: 8.16.1
   elasticsearchRefs:
     - name: elastic-cluster
-  fleetServerRef:
-    name: fleet-server
   daemonSet:
     podTemplate:
       spec:
