@@ -1,4 +1,10 @@
 ---
+# Namespace for Elastic Stack
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: elastic
+---
 # Elasticsearch Deployment
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
@@ -162,7 +168,7 @@ spec:
   elasticsearchRefs:
     - name: elastic-cluster
   deployment:
-    replicas: 2
+    replicas: 1   # Single Fleet Server for HA
     podTemplate:
       spec:
         containers:
