@@ -64,10 +64,10 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "24Gi"
+                  memory: "32Gi"
                   cpu: "8"
                 limits:
-                  memory: "24Gi"
+                  memory: "32Gi"
                   cpu: "8"
       volumeClaimTemplates:
         - metadata:
@@ -77,7 +77,7 @@ spec:
             storageClassName: premium-rwo
             resources:
               requests:
-                storage: 24Ti  # Each data node gets 24Ti storage
+                storage: 20Ti  # Each data node gets 24Ti storage
 
     # Ingest Nodes (2 for HA)
     - name: ingest-nodes
