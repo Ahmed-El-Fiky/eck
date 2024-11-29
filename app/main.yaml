@@ -39,7 +39,7 @@ spec:
             name: elasticsearch-data
           spec:
             accessModes: ["ReadWriteOnce"]
-            storageClassName: premium-rwo
+            storageClassName: standard-rwo
             resources:
               requests:
                 storage: 50Gi
@@ -74,7 +74,7 @@ spec:
             name: elasticsearch-data
           spec:
             accessModes: ["ReadWriteOnce"]
-            storageClassName: premium-rwo
+            storageClassName: standard-rwo
             resources:
               requests:
                 storage: 5Ti  # Each data node gets 24Ti storage
@@ -109,7 +109,7 @@ spec:
             name: elasticsearch-data
           spec:
             accessModes: ["ReadWriteOnce"]
-            storageClassName: premium-rwo
+            storageClassName: standard-rwo
             resources:
               requests:
                 storage: 50Gi
@@ -144,7 +144,7 @@ spec:
             name: elasticsearch-data
           spec:
             accessModes: ["ReadWriteOnce"]
-            storageClassName: premium-rwo
+            storageClassName: standard-rwo
             resources:
               requests:
                 storage: 50Gi
@@ -179,7 +179,7 @@ spec:
             name: elasticsearch-data
           spec:
             accessModes: ["ReadWriteOnce"]
-            storageClassName: premium-rwo
+            storageClassName: standard-rwo
             resources:
               requests:
                 storage: 50Gi
