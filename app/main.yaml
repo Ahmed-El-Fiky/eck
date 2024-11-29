@@ -77,7 +77,7 @@ spec:
             storageClassName: premium-rwo
             resources:
               requests:
-                storage: 20Ti  # Each data node gets 24Ti storage
+                storage: 5Ti  # Each data node gets 24Ti storage
 
     # Ingest Nodes (2 for HA)
     - name: ingest-nodes
