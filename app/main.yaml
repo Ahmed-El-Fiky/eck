@@ -118,7 +118,7 @@ spec:
     - name: coordinator-nodes
       count: 2
       config:
-        node.roles: ["coordinating_only"]
+        node.roles: []
         cluster.routing.allocation.awareness.attributes: "zone"
       podTemplate:
         spec:
