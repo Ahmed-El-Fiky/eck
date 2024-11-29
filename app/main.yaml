@@ -33,7 +33,7 @@ spec:
             name: elasticsearch-data
           spec:
             accessModes: ["ReadWriteOnce"]
-            storageClassName: ssd-storage
+            storageClassName: pd-balanced
             resources:
               requests:
                 storage: 50Gi
@@ -62,7 +62,7 @@ spec:
             name: elasticsearch-data
           spec:
             accessModes: ["ReadWriteOnce"]
-            storageClassName: ssd-storage
+            storageClassName: pd-balanced
             resources:
               requests:
                 storage: 24Ti  # Each data node gets 24Ti storage
@@ -91,7 +91,7 @@ spec:
             name: elasticsearch-data
           spec:
             accessModes: ["ReadWriteOnce"]
-            storageClassName: ssd-storage
+            storageClassName: pd-balanced
             resources:
               requests:
                 storage: 50Gi
@@ -120,7 +120,7 @@ spec:
             name: elasticsearch-data
           spec:
             accessModes: ["ReadWriteOnce"]
-            storageClassName: ssd-storage
+            storageClassName: pd-balanced
             resources:
               requests:
                 storage: 50Gi
@@ -149,7 +149,7 @@ spec:
             name: elasticsearch-data
           spec:
             accessModes: ["ReadWriteOnce"]
-            storageClassName: ssd-storage
+            storageClassName: pd-balanced
             resources:
               requests:
                 storage: 50Gi
