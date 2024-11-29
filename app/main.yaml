@@ -19,11 +19,6 @@ spec:
         spec:
           nodeSelector:
             role: master
-          tolerations:
-            - key: "dedicated"
-              operator: "Equal"
-              value: "master"
-              effect: "NoSchedule"
           initContainers:
             - name: sysctl
               securityContext:
@@ -59,11 +54,6 @@ spec:
         spec:
           nodeSelector:
             role: data
-          tolerations:
-            - key: "dedicated"
-              operator: "Equal"
-              value: "data"
-              effect: "NoSchedule"
           initContainers:
             - name: sysctl
               securityContext:
@@ -99,11 +89,6 @@ spec:
         spec:
           nodeSelector:
             role: shared
-          tolerations:
-            - key: "dedicated"
-              operator: "Equal"
-              value: "shared"
-              effect: "NoSchedule"
           initContainers:
             - name: sysctl
               securityContext:
@@ -139,11 +124,6 @@ spec:
         spec:
           nodeSelector:
             role: shared
-          tolerations:
-            - key: "dedicated"
-              operator: "Equal"
-              value: "shared"
-              effect: "NoSchedule"
           initContainers:
             - name: sysctl
               securityContext:
@@ -179,11 +159,6 @@ spec:
         spec:
           nodeSelector:
             role: shared
-          tolerations:
-            - key: "dedicated"
-              operator: "Equal"
-              value: "shared"
-              effect: "NoSchedule"
           initContainers:
             - name: sysctl
               securityContext:
@@ -223,11 +198,6 @@ spec:
     replicas: 2
     podTemplate:
       spec:
-        tolerations:
-          - key: "dedicated"
-            operator: "Equal"
-            value: "shared"
-            effect: "NoSchedule"
         containers:
           - name: fleet-server
             image: "docker.elastic.co/beats/elastic-agent:8.16.1"
@@ -253,11 +223,6 @@ spec:
     replicas: 2
     podTemplate:
       spec:
-        tolerations:
-          - key: "dedicated"
-            operator: "Equal"
-            value: "shared"
-            effect: "NoSchedule"
         containers:
           - name: elastic-agent
             image: "docker.elastic.co/beats/elastic-agent:8.16.1"
