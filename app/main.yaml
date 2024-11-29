@@ -1,10 +1,4 @@
 ---
-# Namespace for Elastic Stack
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: elastic
----
 # Elasticsearch Deployment
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
@@ -28,11 +22,11 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "4Gi"
-                  cpu: "2"
+                  memory: "2Gi"  # Adjusted to 2Gi memory per master node
+                  cpu: "1"       # Adjusted to 1 CPU per master node
                 limits:
-                  memory: "4Gi"
-                  cpu: "2"
+                  memory: "2Gi"
+                  cpu: "1"
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -57,11 +51,11 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "64Gi"
-                  cpu: "16"
+                  memory: "16Gi"  # Adjusted to 16Gi memory per data node
+                  cpu: "4"        # Adjusted to 4 CPUs per data node
                 limits:
-                  memory: "64Gi"
-                  cpu: "16"
+                  memory: "32Gi"  # Limit adjusted to 32Gi memory
+                  cpu: "8"        # Limit adjusted to 8 CPUs per data node
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -85,11 +79,11 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "4Gi"
-                  cpu: "2"
+                  memory: "2Gi"  # Adjusted to 2Gi memory per ingest node
+                  cpu: "1"        # Adjusted to 1 CPU per ingest node
                 limits:
-                  memory: "4Gi"
-                  cpu: "2"
+                  memory: "2Gi"
+                  cpu: "1"
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -113,11 +107,11 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "4Gi"
-                  cpu: "2"
+                  memory: "2Gi"  # Adjusted to 2Gi memory per coordinator node
+                  cpu: "1"        # Adjusted to 1 CPU per coordinator node
                 limits:
-                  memory: "4Gi"
-                  cpu: "2"
+                  memory: "2Gi"
+                  cpu: "1"
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -141,11 +135,11 @@ spec:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "4Gi"
-                  cpu: "2"
+                  memory: "2Gi"  # Adjusted to 2Gi memory per transform node
+                  cpu: "1"        # Adjusted to 1 CPU per transform node
                 limits:
-                  memory: "4Gi"
-                  cpu: "2"
+                  memory: "2Gi"
+                  cpu: "1"
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -155,32 +149,6 @@ spec:
             resources:
               requests:
                 storage: 50Gi
-
----
-# Kibana Deployment
-apiVersion: kibana.k8s.elastic.co/v1
-kind: Kibana
-metadata:
-  name: kibana
-  namespace: elastic
-spec:
-  version: 8.16.1
-  count: 1
-  elasticsearchRef:
-    name: elastic-cluster
-  podTemplate:
-    spec:
-      nodeSelector:
-        role: shared
-      containers:
-        - name: kibana
-          resources:
-            requests:
-              memory: "4Gi"
-              cpu: "2"
-            limits:
-              memory: "4Gi"
-              cpu: "2"
 
 ---
 # Fleet Server Deployment
@@ -197,17 +165,16 @@ spec:
     replicas: 2
     podTemplate:
       spec:
-        nodeSelector:
-          role: shared
         containers:
           - name: fleet-server
+            image: "docker.elastic.co/beats/elastic-agent:8.16.1"  # Add Fleet Server image
             resources:
               requests:
-                memory: "4Gi"
-                cpu: "2"
+                memory: "2Gi"  # Adjusted to 2Gi memory for fleet server
+                cpu: "1"        # Adjusted to 1 CPU for fleet server
               limits:
-                memory: "4Gi"
-                cpu: "2"
+                memory: "2Gi"
+                cpu: "1"
 
 ---
 # Elastic Agent Deployment
@@ -223,14 +190,13 @@ spec:
   daemonSet:
     podTemplate:
       spec:
-        nodeSelector:
-          role: shared
         containers:
           - name: elastic-agent
+            image: "docker.elastic.co/beats/elastic-agent:8.16.1"  # Add Elastic Agent image
             resources:
               requests:
-                memory: "4Gi"
-                cpu: "2"
+                memory: "2Gi"  # Adjusted to 2Gi memory for agent
+                cpu: "1"        # Adjusted to 1 CPU for agent
               limits:
-                memory: "4Gi"
-                cpu: "2"
+                memory: "2Gi"
+                cpu: "1"
