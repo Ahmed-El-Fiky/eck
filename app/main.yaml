@@ -35,7 +35,7 @@ spec:
                   cpu: "2"
       volumeClaimTemplates:
         - metadata:
-            name: elasticsearch-master-data
+            name: elasticsearch-data
           spec:
             accessModes: ["ReadWriteOnce"]
             storageClassName: ssd-storage
@@ -92,7 +92,7 @@ spec:
                   cpu: "2"
       volumeClaimTemplates:
         - metadata:
-            name: elasticsearch-ingest-data
+            name: elasticsearch-data
           spec:
             accessModes: ["ReadWriteOnce"]
             storageClassName: ssd-storage
@@ -120,7 +120,7 @@ spec:
                   cpu: "2"
       volumeClaimTemplates:
         - metadata:
-            name: elasticsearch-coordinator-data
+            name: elasticsearch-data
           spec:
             accessModes: ["ReadWriteOnce"]
             storageClassName: ssd-storage
@@ -148,7 +148,7 @@ spec:
                   cpu: "2"
       volumeClaimTemplates:
         - metadata:
-            name: elasticsearch-transform-data
+            name: elasticsearch-data
           spec:
             accessModes: ["ReadWriteOnce"]
             storageClassName: ssd-storage
@@ -194,22 +194,21 @@ spec:
   elasticsearchRefs:
     - name: elastic-cluster
   fleetServerEnabled: true
-  policy:
-    id: fleet-policy
-  replicas: 2
-  podTemplate:
-    spec:
-      nodeSelector:
-        role: shared
-      containers:
-        - name: fleet-server
-          resources:
-            requests:
-              memory: "4Gi"
-              cpu: "2"
-            limits:
-              memory: "4Gi"
-              cpu: "2"
+  deployment:
+    replicas: 2
+    podTemplate:
+      spec:
+        nodeSelector:
+          role: shared
+        containers:
+          - name: fleet-server
+            resources:
+              requests:
+                memory: "4Gi"
+                cpu: "2"
+              limits:
+                memory: "4Gi"
+                cpu: "2"
 
 ---
 # Elastic Agent Deployment
@@ -224,18 +223,17 @@ spec:
     - name: elastic-cluster
   fleetServerRef:
     name: fleet-server
-  daemonSet: false
-  replicas: 2
-  podTemplate:
-    spec:
-      nodeSelector:
-        role: shared
-      containers:
-        - name: elastic-agent
-          resources:
-            requests:
-              memory: "4Gi"
-              cpu: "2"
-            limits:
-              memory: "4Gi"
-              cpu: "2"
+  daemonSet:
+    podTemplate:
+      spec:
+        nodeSelector:
+          role: shared
+        containers:
+          - name: elastic-agent
+            resources:
+              requests:
+                memory: "4Gi"
+                cpu: "2"
+              limits:
+                memory: "4Gi"
+                cpu: "2"
