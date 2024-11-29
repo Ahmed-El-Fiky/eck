@@ -19,6 +19,12 @@ spec:
         spec:
           nodeSelector:
             role: master
+          initContainers:
+            - name: sysctl
+              securityContext:
+                privileged: true
+                runAsUser: 0
+              command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
           containers:
             - name: elasticsearch
               resources:
@@ -48,15 +54,21 @@ spec:
         spec:
           nodeSelector:
             role: data
+          initContainers:
+            - name: sysctl
+              securityContext:
+                privileged: true
+                runAsUser: 0
+              command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
           containers:
             - name: elasticsearch
               resources:
                 requests:
-                  memory: "32Gi"  # Adjusted to 16Gi memory per data node
-                  cpu: "8"        # Adjusted to 4 CPUs per data node
+                  memory: "32Gi"
+                  cpu: "8"
                 limits:
-                  memory: "32Gi"  # Limit adjusted to 32Gi memory
-                  cpu: "8"        # Limit adjusted to 8 CPUs per data node
+                  memory: "32Gi"
+                  cpu: "8"
       volumeClaimTemplates:
         - metadata:
             name: elasticsearch-data
@@ -77,6 +89,12 @@ spec:
         spec:
           nodeSelector:
             role: shared
+          initContainers:
+            - name: sysctl
+              securityContext:
+                privileged: true
+                runAsUser: 0
+              command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
           containers:
             - name: elasticsearch
               resources:
@@ -106,6 +124,12 @@ spec:
         spec:
           nodeSelector:
             role: shared
+          initContainers:
+            - name: sysctl
+              securityContext:
+                privileged: true
+                runAsUser: 0
+              command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
           containers:
             - name: elasticsearch
               resources:
@@ -135,6 +159,12 @@ spec:
         spec:
           nodeSelector:
             role: shared
+          initContainers:
+            - name: sysctl
+              securityContext:
+                privileged: true
+                runAsUser: 0
+              command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
           containers:
             - name: elasticsearch
               resources:
@@ -169,6 +199,12 @@ spec:
     replicas: 2   # 2 replicas for HA setup
     podTemplate:
       spec:
+        initContainers:
+          - name: sysctl
+            securityContext:
+              privileged: true
+              runAsUser: 0
+            command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
         containers:
           - name: fleet-server
             image: "docker.elastic.co/beats/elastic-agent:8.16.1"  # Fleet Server image
@@ -195,6 +231,12 @@ spec:
     replicas: 2   # 2 replicas for HA setup
     podTemplate:
       spec:
+        initContainers:
+          - name: sysctl
+            securityContext:
+              privileged: true
+              runAsUser: 0
+            command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
         containers:
           - name: elastic-agent
             image: "docker.elastic.co/beats/elastic-agent:8.16.1"  # Elastic Agent image
